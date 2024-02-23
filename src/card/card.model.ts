@@ -1,12 +1,5 @@
 import mongoose from 'mongoose';
-
-type Card = {
-  name: string;
-  link: string;
-  owner: mongoose.ObjectId;
-  likes: mongoose.ObjectId[];
-  createdAt: Date;
-};
+import { Card } from './card.type';
 
 const cardSchema = new mongoose.Schema<Card>({
   name: {
