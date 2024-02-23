@@ -8,7 +8,9 @@
     "build": "tsc",
     "dev": "ts-node-dev src/app.ts",
     "start": "ts-node src/app.ts",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "db:start": "brew services start mongodb/brew/mongodb-community@4.4",
+    "db:stop": "brew services stop mongodb/brew/mongodb-community@4.4"
   },
   "author": "Alexey Krutyakov",
   "license": "ISC",
