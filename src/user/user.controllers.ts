@@ -6,7 +6,7 @@ import User from './user.model';
 export const getUsers = async (req: Request, res: Response) => {
   try {
     const users = await User.find({});
-    return res.send({ data: users });
+    return res.send(users);
   } catch (error) {
     return res
       .status(constants.HTTP_STATUS_INTERNAL_SERVER_ERROR)
@@ -22,7 +22,7 @@ export const getUserById = async (req: Request, res: Response) => {
       error.name = 'NotFoundError';
       return error;
     });
-    return res.send({ data: user });
+    return res.send(user);
   } catch (error) {
     if (error instanceof MongooseError.CastError) {
       return res
