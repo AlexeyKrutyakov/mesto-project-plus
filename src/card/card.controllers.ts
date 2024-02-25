@@ -20,7 +20,14 @@ export const createCard = async (req: Request, res: Response) => {
     const newCard = new Card(req.body);
     return res.status(constants.HTTP_STATUS_CREATED).send(await newCard.save());
   } catch (error) {
-    return res.send(error);
+    if (error instanceof MongooseError.ValidationError) {
+      return res.status(constants.HTTP_STATUS_BAD_REQUEST).send({
+        error: error.message,
+      });
+    }
+    return res
+      .status(constants.HTTP_STATUS_INTERNAL_SERVER_ERROR)
+      .send('internal server error');
   }
 };
 
