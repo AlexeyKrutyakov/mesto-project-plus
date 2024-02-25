@@ -27,7 +27,7 @@ export const createCard = async (req: Request, res: Response) => {
     }
     return res
       .status(constants.HTTP_STATUS_INTERNAL_SERVER_ERROR)
-      .send('internal server error');
+      .send({ message: errorText.INTERNAL_SERVER_ERROR });
   }
 };
 
@@ -44,13 +44,15 @@ export const deleteCardById = async (req: Request, res: Response) => {
     if (error instanceof MongooseError.CastError) {
       return res
         .status(constants.HTTP_STATUS_BAD_REQUEST)
-        .send({ message: 'bad request, not valide cardId' });
+        .send({ error: 'not valid cardId' });
     }
     if (error instanceof Error && error.name === 'NotFoundError') {
       return res
         .status(constants.HTTP_STATUS_NOT_FOUND)
         .send({ message: error.message });
     }
-    return res.send({ error });
+    return res
+      .status(constants.HTTP_STATUS_INTERNAL_SERVER_ERROR)
+      .send({ message: errorText.INTERNAL_SERVER_ERROR });
   }
 };

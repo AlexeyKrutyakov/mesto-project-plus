@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { constants } from 'http2';
 import { Error as MongooseError } from 'mongoose';
+import errorText from '../constants/errors';
 import User from './user.model';
 
 export const getUsers = async (req: Request, res: Response) => {
@@ -10,7 +11,7 @@ export const getUsers = async (req: Request, res: Response) => {
   } catch (error) {
     return res
       .status(constants.HTTP_STATUS_INTERNAL_SERVER_ERROR)
-      .send({ message: 'internal server error' });
+      .send({ message: errorText.INTERNAL_SERVER_ERROR });
   }
 };
 
@@ -27,17 +28,16 @@ export const getUserById = async (req: Request, res: Response) => {
     if (error instanceof MongooseError.CastError) {
       return res
         .status(constants.HTTP_STATUS_BAD_REQUEST)
-        .send({ message: 'bad request, not valide userId' });
+        .send({ error: 'not valid userId' });
     }
     if (error instanceof Error && error.name === 'NotFoundError') {
       return res
         .status(constants.HTTP_STATUS_NOT_FOUND)
         .send({ message: error.message });
     }
-    console.log(error);
     return res
       .status(constants.HTTP_STATUS_INTERNAL_SERVER_ERROR)
-      .send({ message: 'internal server error' });
+      .send({ message: errorText.INTERNAL_SERVER_ERROR });
   }
 };
 
@@ -48,20 +48,19 @@ export const createUser = async (req: Request, res: Response) => {
     // User.populate(newUser, ['owner, likes'])
     return res.status(constants.HTTP_STATUS_CREATED).send(await newUser.save());
   } catch (error) {
-    if (error instanceof Error && error.message.startsWith('E11000')) {
-      return res.status(constants.HTTP_STATUS_CONFLICT).send({
-        message: 'duplicate name user',
-        error: error.message,
-      });
-    }
+    // todo is need check for duplicate user ?
+    // if (error instanceof Error && error.message.startsWith('E11000')) {
+    //   return res.status(constants.HTTP_STATUS_CONFLICT).send({
+    //     error: error.message,
+    //   });
+    // }
     if (error instanceof MongooseError.ValidationError) {
       return res.status(constants.HTTP_STATUS_BAD_REQUEST).send({
-        message: 'bad request, not valide user data',
         error: error.message,
       });
     }
     return res
       .status(constants.HTTP_STATUS_INTERNAL_SERVER_ERROR)
-      .send({ message: 'internal server error' });
+      .send({ message: errorText.INTERNAL_SERVER_ERROR });
   }
 };
