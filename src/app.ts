@@ -1,5 +1,11 @@
 import 'dotenv/config';
-import express, { Router, json } from 'express';
+import express, {
+  NextFunction,
+  Request,
+  Response,
+  Router,
+  json,
+} from 'express';
 import mongoose from 'mongoose';
 import userRouter from './user/user.router';
 
@@ -10,6 +16,16 @@ const router = Router();
 router.use('/users', userRouter);
 
 app.use(json());
+
+// todo remove hardCode later
+app.use((req: Request, res: Response, next: NextFunction) => {
+  req.user = {
+    _id: '65da4fc1d20d808272b8d586',
+  };
+
+  next();
+});
+
 app.use(router);
 
 const connect = async () => {
