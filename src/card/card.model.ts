@@ -4,17 +4,17 @@ import { Card } from './card.type';
 const cardSchema = new mongoose.Schema<Card>({
   name: {
     type: String,
-    required: true,
-    minlength: 2,
-    maxlength: 30,
+    required: [true, 'Поле обязательно для заполнения'],
+    minlength: [2, 'Минимальная длина 2 символа'],
+    maxlength: [30, 'Максимальная длина 30 символов'],
   },
   link: {
     type: String,
-    required: true,
+    required: [true, 'Поле обязательно для заполнения'],
   },
   owner: {
     type: mongoose.Types.ObjectId,
-    required: true,
+    required: [true, 'Поле обязательно для заполнения'],
   },
   likes: [
     {
