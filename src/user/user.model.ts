@@ -6,7 +6,7 @@ const userSchema = new mongoose.Schema<User>(
     name: {
       type: String,
       required: [true, 'Поле обязательно для заполнения'],
-      unique: true,
+      // unique: true, //todo is need it ?
       minlength: [2, 'Минимальная длина 2 символа'],
       maxlength: [30, 'Максимальная длина 30 символов'],
     },
