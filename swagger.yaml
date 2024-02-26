@@ -1,0 +1,390 @@
+openapi: 3.1.0
+info:
+  title: Mesto server
+  version: 0.0.1
+servers:
+  - url: http://127.0.0.1:3000
+    description: local dev server
+  - url: https://nomoreparties.co/v1/plus-cohort-24
+    description: YP mesto server
+paths:
+  /users:
+    get:
+      summary: Get all users
+      tags:
+        - Users
+      operationId: getUrers
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Users'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/INTERNAL_SERVER_ERROR'
+    post:
+      summary: Create new user
+      tags:
+        - Users
+      operationId: createUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - about
+                - avatar
+              properties:
+                name:
+                  $ref: '#/components/schemas/USER_NAME'
+                about:
+                  $ref: '#/components/schemas/USER_ABOUT'
+                avatar:
+                  $ref: '#/components/schemas/USER_AVATAR'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BAD_REQUEST_ERROR'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/INTERNAL_SERVER_ERROR'
+  /users/me:
+    patch:
+      summary: Change user info
+      tags:
+        - Users
+      operationId: changeUserInfo
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - about
+              properties:
+                name:
+                  $ref: '#/components/schemas/USER_NAME'
+                about:
+                  $ref: '#/components/schemas/USER_ABOUT'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BAD_REQUEST_ERROR'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NOT_FOUND_ERROR'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/INTERNAL_SERVER_ERROR'
+  /users/me/avatar:
+    patch:
+      summary: Change user avatar
+      tags:
+        - Users
+      operationId: changeUserAvatar
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - avatar
+              properties:
+                avatar:
+                  $ref: '#/components/schemas/USER_AVATAR'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BAD_REQUEST_ERROR'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/INTERNAL_SERVER_ERROR'
+  /users/{userId}:
+    get:
+      summary: Get user by ID
+      tags:
+        - Users
+      operationId: getUrerById
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+          example: d7fd7ac4dab38fe4557cfe28
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BAD_REQUEST_ERROR'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NOT_FOUND_ERROR'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/INTERNAL_SERVER_ERROR'
+  /cards:
+    get:
+      summary: Get all cards
+      tags:
+        - Cards
+      operationId: getCards
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cards'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/INTERNAL_SERVER_ERROR'
+    post:
+      summary: Create new Card
+      tags:
+        - Cards
+      operationId: createCard
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - link
+              properties:
+                name:
+                  $ref: '#/components/schemas/CARD_NAME'
+                link:
+                  $ref: '#/components/schemas/CARD_LINK'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Card'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BAD_REQUEST_ERROR'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/INTERNAL_SERVER_ERROR'
+  /cards/{cardId}:
+    delete:
+      summary: Delete card by ID
+      tags:
+        - Cards
+      operationId: deleteCardById
+      parameters:
+        - name: cardId
+          in: path
+          required: true
+          schema:
+            type: string
+          example: 65db5908889c8e0019b046c9
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    examples:
+                      - Card was deleted
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BAD_REQUEST_ERROR'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NOT_FOUND_ERROR'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/INTERNAL_SERVER_ERROR'
+components:
+  schemas:
+    User:
+      type: object
+      required:
+        - name
+        - about
+        - avatar
+      properties:
+        _id:
+          $ref: '#/components/schemas/USER_ID'
+        name:
+          $ref: '#/components/schemas/USER_NAME'
+        about:
+          $ref: '#/components/schemas/USER_ABOUT'
+        avatar:
+          $ref: '#/components/schemas/USER_AVATAR'
+    Users:
+      type: array
+      items:
+        $ref: '#/components/schemas/User'
+    Card:
+      type: object
+      required:
+        - name
+        - link
+        - owner
+      properties:
+        _id:
+          $ref: '#/components/schemas/CARD_ID'
+        name:
+          $ref: '#/components/schemas/CARD_NAME'
+        link:
+          $ref: '#/components/schemas/CARD_LINK'
+        owner:
+          $ref: '#/components/schemas/User'
+        likes:
+          $ref: '#/components/schemas/Users'
+        createdAt:
+          $ref: '#/components/schemas/CREATED_AT'
+    Cards:
+      type: array
+      items:
+        $ref: '#/components/schemas/Card'
+    NOT_FOUND_ERROR:
+      type: object
+      properties:
+        message:
+          type: string
+          examples:
+            - Not Found Error
+    BAD_REQUEST_ERROR:
+      type: object
+      properties:
+        message:
+          type: string
+          examples:
+            - Bad Request Error
+    INTERNAL_SERVER_ERROR:
+      type: object
+      properties:
+        message:
+          type: string
+          examples:
+            - Internal Server Error
+    USER_ID:
+      type: string
+      examples:
+        - d7fd7ac4dab38fe4557cfe28
+    USER_NAME:
+      type: string
+      examples:
+        - Alex
+    USER_ABOUT:
+      type: string
+      examples:
+        - Web designer
+    USER_AVATAR:
+      type: string
+      examples:
+        - https://images/user-avatar.png
+    CARD_ID:
+      type: string
+      examples:
+        - 657c66790083b561d572149c
+    CARD_NAME:
+      type: string
+      examples:
+        - Beautiful picture
+    CARD_LINK:
+      type: string
+      examples:
+        - https://images/picture.png
+    CARD_OWNER:
+      type: object
+      examples:
+        - $ref: '#/components/schemas/User'
+    CREATED_AT:
+      type: string
+      format: 2023-09-08T08:12:58.519Z
+      examples:
+        - 2023-09-08T08:12:58.519Z
