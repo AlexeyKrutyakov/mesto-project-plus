@@ -21,7 +21,8 @@ app.use(json());
 // todo remove hardCode later
 app.use((req: Request, res: Response, next: NextFunction) => {
   req.body.owner = {
-    _id: '65de189c8e847fc7a0bcba29',
+    _id: '65de189c8e847fc7a0bcba28',
+    // _id: '65de189c8e847fc7a0bcba29',
   };
   next();
 });
@@ -39,7 +40,7 @@ const connect = async () => {
     await mongoose.connect(MONGO_URL);
     console.log(`connected with ${MONGO_URL}`);
 
-    await app.listen(PORT);
+    app.listen(PORT);
     console.log(`server run on port ${PORT}`);
   } catch (err) {
     console.log(err);
