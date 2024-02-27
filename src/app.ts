@@ -7,6 +7,7 @@ import express, {
   json,
 } from 'express';
 import mongoose from 'mongoose';
+import { errors } from 'celebrate';
 import userRouter from './user/user.router';
 import cardRouter from './card/card.router';
 
@@ -20,7 +21,7 @@ app.use(json());
 // todo remove hardCode later
 app.use((req: Request, res: Response, next: NextFunction) => {
   req.body.owner = {
-    _id: '65da4fc1d20d808272b8d586',
+    _id: '65de189c8e847fc7a0bcba29',
   };
   next();
 });
@@ -29,6 +30,8 @@ router.use('/users', userRouter);
 router.use('/cards', cardRouter);
 
 app.use(router);
+
+app.use(errors());
 
 const connect = async () => {
   try {
