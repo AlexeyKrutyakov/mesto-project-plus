@@ -159,6 +159,7 @@ paths:
         - name: userId
           in: path
           required: true
+          description: user._id
           schema:
             type: string
           example: d7fd7ac4dab38fe4557cfe28
@@ -253,6 +254,7 @@ paths:
         - name: cardId
           in: path
           required: true
+          description: card._id
           schema:
             type: string
           example: 65db5908889c8e0019b046c9
@@ -268,6 +270,98 @@ paths:
                     type: string
                     examples:
                       - Card was deleted
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BAD_REQUEST_ERROR'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NOT_FOUND_ERROR'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/INTERNAL_SERVER_ERROR'
+  /cards/likes/{cardId}:
+    put:
+      summary: Add like to card
+      tags:
+        - Cards
+      operationId: addCardLike
+      parameters:
+        - name: cardId
+          in: path
+          required: true
+          description: card._id
+          schema:
+            type: string
+          example: 657c66790083b561d572149c
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Card'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BAD_REQUEST_ERROR'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NOT_FOUND_ERROR'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/INTERNAL_SERVER_ERROR'
+    delete:
+      summary: Remove like from card
+      tags:
+        - Cards
+      operationId: removeCardLike
+      parameters:
+        - name: cardId
+          in: path
+          required: true
+          description: card._id
+          schema:
+            type: string
+          example: 657c66790083b561d572149c
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  _id:
+                    $ref: '#/components/schemas/CARD_ID'
+                  name:
+                    $ref: '#/components/schemas/CARD_NAME'
+                  link:
+                    $ref: '#/components/schemas/CARD_LINK'
+                  owner:
+                    $ref: '#/components/schemas/User'
+                  likes:
+                    type: array
+                    examples:
+                      - []
+                  createdAt:
+                    $ref: '#/components/schemas/CREATED_AT'
         '400':
           description: Bad Request
           content:
