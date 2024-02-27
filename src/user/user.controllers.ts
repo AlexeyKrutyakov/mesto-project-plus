@@ -64,3 +64,15 @@ export const createUser = async (req: Request, res: Response) => {
       .send({ message: errorText.INTERNAL_SERVER_ERROR });
   }
 };
+
+export const updateUserInfo = async (req: Request, res: Response) => {
+  const { _id } = req.body.owner;
+  const { name, about } = req.body;
+  try {
+    await User.findByIdAndUpdate(_id, { name, about });
+    return res.send(await User.findById(_id));
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send({ message: error });
+  }
+};
