@@ -4,12 +4,29 @@ import {
   createUser,
   getUserById,
   getUsers,
+  updateUserAvatar,
   updateUserInfo,
 } from './user.controllers';
 
 const userRouter = Router();
 
 userRouter.get('/', getUsers);
+
+userRouter.get('/:userId', getUserById);
+
+userRouter.post(
+  '/',
+  celebrate({
+    body: Joi.object()
+      .keys({
+        name: Joi.string().required().min(2).max(30),
+        about: Joi.string().required().min(2).max(200),
+        avatar: Joi.string().required(),
+      })
+      .unknown(true),
+  }),
+  createUser,
+);
 
 userRouter.patch(
   '/me',
@@ -24,18 +41,16 @@ userRouter.patch(
   updateUserInfo,
 );
 
-userRouter.get('/:userId', getUserById);
-
-userRouter.post(
-  '/',
+userRouter.patch(
+  '/me/avatar',
   celebrate({
-    body: Joi.object().keys({
-      name: Joi.string().required().min(2).max(30),
-      about: Joi.string().required().min(2).max(200),
-      avatar: Joi.string().required(),
-    }),
+    body: Joi.object()
+      .keys({
+        avatar: Joi.string().required(),
+      })
+      .unknown(true),
   }),
-  createUser,
+  updateUserAvatar,
 );
 
 export default userRouter;
