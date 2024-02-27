@@ -19,6 +19,7 @@ export const getUserById = async (req: Request, res: Response) => {
   try {
     const { userId } = req.params;
     const user = await User.findById(userId).orFail(() => {
+      // todo move to util function userNotFound
       const error = new Error('user not found');
       error.name = 'NotFoundError';
       return error;
@@ -54,11 +55,11 @@ export const createUser = async (req: Request, res: Response) => {
     //     error: error.message,
     //   });
     // }
-    if (error instanceof MongooseError.ValidationError) {
-      return res.status(constants.HTTP_STATUS_BAD_REQUEST).send({
-        error: error.message,
-      });
-    }
+    // if (error instanceof MongooseError.ValidationError) {
+    //   return res.status(constants.HTTP_STATUS_BAD_REQUEST).send({
+    //     error: error.message,
+    //   });
+    // }
     return res
       .status(constants.HTTP_STATUS_INTERNAL_SERVER_ERROR)
       .send({ message: errorText.INTERNAL_SERVER_ERROR });
@@ -69,10 +70,35 @@ export const updateUserInfo = async (req: Request, res: Response) => {
   const { _id } = req.body.owner;
   const { name, about } = req.body;
   try {
-    await User.findByIdAndUpdate(_id, { name, about });
+    await User.findByIdAndUpdate(_id, { name, about }).orFail(() => {
+      // todo move to util function userNotFound
+      const error = new Error('user not found');
+      error.name = 'NotFoundError';
+      return error;
+    });
     return res.send(await User.findById(_id));
   } catch (error) {
-    console.log(error);
-    return res.status(500).send({ message: error });
+    if (error instanceof Error && error.name === 'NotFoundError') {
+      return res
+        .status(constants.HTTP_STATUS_BAD_REQUEST)
+        .send({ error: 'not valid userId' });
+    }
+    return (
+      res
+        // .status(constants.HTTP_STATUS_INTERNAL_SERVER_ERROR)
+        .send({ message: error })
+    );
+  }
+};
+
+export const updateUserAvatar = async (req: Request, res: Response) => {
+  const { _id } = req.body.owner;
+  const { avatar } = req.body;
+  try {
+    await User.findByIdAndUpdate(_id, { avatar });
+    console.log('wow');
+    return res.send(await User.findById(_id));
+  } catch (error) {
+    return res.send({ message: error });
   }
 };
