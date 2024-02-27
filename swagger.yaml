@@ -451,10 +451,14 @@ components:
         - d7fd7ac4dab38fe4557cfe28
     USER_NAME:
       type: string
+      minLength: 2
+      maxLength: 30
       examples:
         - Alex
     USER_ABOUT:
       type: string
+      minLength: 2
+      maxLength: 200
       examples:
         - Web designer
     USER_AVATAR:
