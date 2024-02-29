@@ -44,7 +44,7 @@ const connect = async () => {
     app.listen(PORT);
     // console.log(`server run on port ${PORT}`);
   } catch (err) {
-    return err;
+    throw new Error(`${err}`);
   }
 };
 
