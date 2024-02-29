@@ -1,103 +1,97 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import { constants } from 'http2';
 import { Error as MongooseError } from 'mongoose';
+import BadRequestError from '../errors/bad-request-error';
+import NotFoundError from '../errors/not-found-error';
+import InternalServerError from '../errors/internal-server-error';
 import errorText from '../constants/errors';
 import User from './user.model';
 
-export const getUsers = async (req: Request, res: Response) => {
+export const getUsers = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
     const users = await User.find({});
     return res.send(users);
   } catch (error) {
-    return res
-      .status(constants.HTTP_STATUS_INTERNAL_SERVER_ERROR)
-      .send({ message: errorText.INTERNAL_SERVER_ERROR });
+    const serverError = new InternalServerError(
+      errorText.INTERNAL_SERVER_ERROR,
+    );
+    return next(serverError);
   }
 };
 
-export const getUserById = async (req: Request, res: Response) => {
+export const getUserById = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
     const { userId } = req.params;
     const user = await User.findById(userId).orFail(() => {
-      // todo move to util function userNotFound
-      const error = new Error('user not found');
-      error.name = 'NotFoundError';
-      return error;
+      throw new NotFoundError(errorText.USER_NOT_FOUND);
     });
     return res.send(user);
   } catch (error) {
     if (error instanceof MongooseError.CastError) {
-      return res
-        .status(constants.HTTP_STATUS_BAD_REQUEST)
-        .send({ error: 'not valid userId' });
+      const badRequestError = new BadRequestError(errorText.NOT_VALID_USER_ID);
+      return next(badRequestError);
     }
-    if (error instanceof Error && error.name === 'NotFoundError') {
-      return res
-        .status(constants.HTTP_STATUS_NOT_FOUND)
-        .send({ message: error.message });
-    }
-    return res
-      .status(constants.HTTP_STATUS_INTERNAL_SERVER_ERROR)
-      .send({ message: errorText.INTERNAL_SERVER_ERROR });
+    return next(error);
   }
 };
 
-export const createUser = async (req: Request, res: Response) => {
+export const createUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
     const newUser = new User(req.body);
-    // todo
+    // todo ?
     // User.populate(newUser, ['owner, likes'])
     return res.status(constants.HTTP_STATUS_CREATED).send(await newUser.save());
   } catch (error) {
-    // todo is need check for duplicate user ?
-    // if (error instanceof Error && error.message.startsWith('E11000')) {
-    //   return res.status(constants.HTTP_STATUS_CONFLICT).send({
-    //     error: error.message,
-    //   });
-    // }
-    // if (error instanceof MongooseError.ValidationError) {
-    //   return res.status(constants.HTTP_STATUS_BAD_REQUEST).send({
-    //     error: error.message,
-    //   });
-    // }
-    return res
-      .status(constants.HTTP_STATUS_INTERNAL_SERVER_ERROR)
-      .send({ message: errorText.INTERNAL_SERVER_ERROR });
+    return next(error);
   }
 };
 
-export const updateUserInfo = async (req: Request, res: Response) => {
+export const updateUserInfo = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   const { _id } = req.body.owner;
   const { name, about } = req.body;
   try {
     await User.findByIdAndUpdate(_id, { name, about }).orFail(() => {
-      // todo move to util function userNotFound
-      const error = new Error('user not found');
-      error.name = 'NotFoundError';
-      return error;
+      throw new NotFoundError(errorText.USER_NOT_FOUND);
     });
     return res.send(await User.findById(_id));
   } catch (error) {
-    if (error instanceof Error && error.name === 'NotFoundError') {
-      return res
-        .status(constants.HTTP_STATUS_BAD_REQUEST)
-        .send({ error: 'not valid userId' });
+    if (error instanceof MongooseError.CastError) {
+      const badRequestError = new BadRequestError(errorText.NOT_VALID_USER_ID);
+      return next(badRequestError);
     }
-    return (
-      res
-        // .status(constants.HTTP_STATUS_INTERNAL_SERVER_ERROR)
-        .send({ message: error })
-    );
+    return next(error);
   }
 };
 
-export const updateUserAvatar = async (req: Request, res: Response) => {
+export const updateUserAvatar = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   const { _id } = req.body.owner;
   const { avatar } = req.body;
   try {
-    await User.findByIdAndUpdate(_id, { avatar });
+    await User.findByIdAndUpdate(_id, { avatar }).orFail(() => {
+      throw new NotFoundError(errorText.USER_NOT_FOUND);
+    });
     return res.send(await User.findById(_id));
   } catch (error) {
-    return res.send({ message: error });
+    return next(error);
   }
 };
