@@ -21,8 +21,9 @@ app.use(json());
 // todo remove hardCode later
 app.use((req: Request, res: Response, next: NextFunction) => {
   req.body.owner = {
-    _id: '65de189c8e847fc7a0bcba28',
-    // _id: '65de189c8e847fc7a0bcba29',
+    // _id: '65de189c8e847fc7a0bcba28',
+    _id: '65de18ba8e847fc7a0bcba2b', // Bob
+    // _id: '65de189c8e847fc7a0bcba29', // Alex
   };
   next();
 });
@@ -38,12 +39,12 @@ const connect = async () => {
   try {
     mongoose.set('strictQuery', true);
     await mongoose.connect(MONGO_URL);
-    console.log(`connected with ${MONGO_URL}`);
+    // console.log(`connected with ${MONGO_URL}`);
 
     app.listen(PORT);
-    console.log(`server run on port ${PORT}`);
+    // console.log(`server run on port ${PORT}`);
   } catch (err) {
-    console.log(err);
+    return err;
   }
 };
 

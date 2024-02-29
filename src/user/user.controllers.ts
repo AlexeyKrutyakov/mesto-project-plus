@@ -96,7 +96,6 @@ export const updateUserAvatar = async (req: Request, res: Response) => {
   const { avatar } = req.body;
   try {
     await User.findByIdAndUpdate(_id, { avatar });
-    console.log('wow');
     return res.send(await User.findById(_id));
   } catch (error) {
     return res.send({ message: error });
