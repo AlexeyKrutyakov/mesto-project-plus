@@ -288,7 +288,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/INTERNAL_SERVER_ERROR'
-  /cards/likes/{cardId}:
+  /cards/{cardId}likes/:
     put:
       summary: Add like to card
       tags:
@@ -471,6 +471,8 @@ components:
         - 657c66790083b561d572149c
     CARD_NAME:
       type: string
+      minLength: 2
+      maxLength: 30
       examples:
         - Beautiful picture
     CARD_LINK:
