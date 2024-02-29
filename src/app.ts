@@ -35,6 +35,11 @@ app.use(router);
 
 app.use(errors());
 
+app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+  res.send({ message: err.message });
+  next();
+});
+
 const connect = async () => {
   try {
     mongoose.set('strictQuery', true);
