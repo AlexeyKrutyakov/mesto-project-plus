@@ -1,4 +1,5 @@
-const errorText = {
+const responseMessage = {
+  CARD_WAS_DELETED: 'Card was deleted',
   REQUEST_BODY_IS_NOT_VALID: 'Data in request body is not valid, check it',
   CELEBRATE_VALIDATION_FAILED: 'Validation failed',
   NOT_VALID_USER_ID: 'Not valid user id',
@@ -10,4 +11,4 @@ const errorText = {
   INTERNAL_SERVER_ERROR: 'Internal Server Error',
 };
 
-export default errorText;
+export default responseMessage;
