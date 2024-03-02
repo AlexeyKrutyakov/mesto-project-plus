@@ -5,9 +5,9 @@ const userSchema = new mongoose.Schema<User>(
   {
     name: {
       type: String,
-      required: [true, 'Поле обязательно для заполнения'],
       minlength: [2, 'Минимальная длина 2 символа'],
       maxlength: [30, 'Максимальная длина 30 символов'],
+      default: 'Жак-Ив Кусто',
     },
     email: {
       type: String,
@@ -16,16 +16,18 @@ const userSchema = new mongoose.Schema<User>(
     },
     password: {
       type: String,
+      required: [true, 'Поле обязательно для заполнения'],
     },
     about: {
       type: String,
-      required: [true, 'Поле обязательно для заполнения'],
       minlength: [2, 'Минимальная длина 2 символа'],
       maxlength: [200, 'Максимальная длина 200 символов'],
+      default: 'Исследователь',
     },
     avatar: {
       type: String,
-      required: [true, 'Поле обязательно для заполнения'],
+      default:
+        'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
     },
   },
   {
