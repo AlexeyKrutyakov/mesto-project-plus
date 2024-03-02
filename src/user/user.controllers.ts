@@ -1,10 +1,9 @@
 import { NextFunction, Request, Response } from 'express';
 import { constants } from 'http2';
 import { Error as MongooseError } from 'mongoose';
-import BadRequestError from '../errors/bad-request-error';
-import NotFoundError from '../errors/not-found-error';
-import InternalServerError from '../errors/internal-server-error';
-import errorText from '../constants/errors';
+import BadRequestError from '../error/bad-request-error';
+import NotFoundError from '../error/not-found-error';
+import responseMessage from '../constants/responseMessages';
 import User from './user.model';
 
 export const getUsers = async (
@@ -16,10 +15,7 @@ export const getUsers = async (
     const users = await User.find({});
     return res.send(users);
   } catch (error) {
-    const serverError = new InternalServerError(
-      errorText.INTERNAL_SERVER_ERROR,
-    );
-    return next(serverError);
+    return next(error);
   }
 };
 
@@ -31,12 +27,14 @@ export const getUserById = async (
   try {
     const { userId } = req.params;
     const user = await User.findById(userId).orFail(() => {
-      throw new NotFoundError(errorText.USER_NOT_FOUND);
+      throw new NotFoundError(responseMessage.USER_NOT_FOUND);
     });
     return res.send(user);
   } catch (error) {
     if (error instanceof MongooseError.CastError) {
-      const badRequestError = new BadRequestError(errorText.NOT_VALID_USER_ID);
+      const badRequestError = new BadRequestError(
+        responseMessage.NOT_VALID_USER_ID,
+      );
       return next(badRequestError);
     }
     return next(error);
@@ -67,12 +65,14 @@ export const updateUserInfo = async (
   const { name, about } = req.body;
   try {
     await User.findByIdAndUpdate(_id, { name, about }).orFail(() => {
-      throw new NotFoundError(errorText.USER_NOT_FOUND);
+      throw new NotFoundError(responseMessage.USER_NOT_FOUND);
     });
     return res.send(await User.findById(_id));
   } catch (error) {
     if (error instanceof MongooseError.CastError) {
-      const badRequestError = new BadRequestError(errorText.NOT_VALID_USER_ID);
+      const badRequestError = new BadRequestError(
+        responseMessage.NOT_VALID_USER_ID,
+      );
       return next(badRequestError);
     }
     return next(error);
@@ -88,7 +88,7 @@ export const updateUserAvatar = async (
   const { avatar } = req.body;
   try {
     await User.findByIdAndUpdate(_id, { avatar }).orFail(() => {
-      throw new NotFoundError(errorText.USER_NOT_FOUND);
+      throw new NotFoundError(responseMessage.USER_NOT_FOUND);
     });
     return res.send(await User.findById(_id));
   } catch (error) {
