@@ -1,63 +1,70 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import { constants } from 'http2';
 import { Error as MongooseError } from 'mongoose';
-import errorText from '../constants/errors';
+import responseMessage from '../constants/responseMessages';
 import Card from './card.model';
+import BadRequestError from '../error/bad-request-error';
+import NotFoundError from '../error/not-found-error';
 
-export const getCards = async (req: Request, res: Response) => {
+export const getCards = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
     const cards = await Card.find({});
     return res.send(cards);
   } catch (error) {
-    return res
-      .status(constants.HTTP_STATUS_INTERNAL_SERVER_ERROR)
-      .send({ message: errorText.INTERNAL_SERVER_ERROR });
+    return next(error);
   }
 };
 
-export const createCard = async (req: Request, res: Response) => {
+export const createCard = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
     const newCard = new Card(req.body);
     return res.status(constants.HTTP_STATUS_CREATED).send(await newCard.save());
   } catch (error) {
     if (error instanceof MongooseError.ValidationError) {
-      return res.status(constants.HTTP_STATUS_BAD_REQUEST).send({
-        error: error.message,
-      });
+      const badRequestError = new BadRequestError(
+        responseMessage.NOT_VALID_CARD_ID,
+      );
+      return next(badRequestError);
     }
-    return res
-      .status(constants.HTTP_STATUS_INTERNAL_SERVER_ERROR)
-      .send({ message: errorText.INTERNAL_SERVER_ERROR });
+    return next(error);
   }
 };
 
-export const deleteCardById = async (req: Request, res: Response) => {
+export const deleteCardById = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
     const { cardId } = req.params;
     await Card.findByIdAndDelete(cardId).orFail(() => {
-      const error = new Error('card not found');
-      error.name = 'NotFoundError';
-      return error;
+      throw new NotFoundError(responseMessage.CARD_NOT_FOUND);
     });
-    return res.send({ message: 'card deleted' });
+    return res.send({ message: responseMessage.CARD_WAS_DELETED });
   } catch (error) {
     if (error instanceof MongooseError.CastError) {
-      return res
-        .status(constants.HTTP_STATUS_BAD_REQUEST)
-        .send({ error: 'not valid cardId' });
+      const badRequestError = new BadRequestError(
+        responseMessage.NOT_VALID_CARD_ID,
+      );
+      return next(badRequestError);
     }
-    if (error instanceof Error && error.name === 'NotFoundError') {
-      return res
-        .status(constants.HTTP_STATUS_NOT_FOUND)
-        .send({ message: error.message });
-    }
-    return res
-      .status(constants.HTTP_STATUS_INTERNAL_SERVER_ERROR)
-      .send({ message: errorText.INTERNAL_SERVER_ERROR });
+    return next(error);
   }
 };
 
-export const addLikeToCard = async (req: Request, res: Response) => {
+export const addLikeToCard = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   const { cardId } = req.params;
   const userId = req.body.owner._id;
   try {
@@ -66,27 +73,25 @@ export const addLikeToCard = async (req: Request, res: Response) => {
       { $addToSet: { likes: userId } },
       { new: true },
     ).orFail(() => {
-      const error = new Error('card not found');
-      error.name = 'NotFoundError';
-      return error;
+      throw new NotFoundError(responseMessage.CARD_NOT_FOUND);
     });
     return res.send(await Card.findById(cardId));
   } catch (error) {
     if (error instanceof MongooseError.CastError) {
-      return res
-        .status(constants.HTTP_STATUS_BAD_REQUEST)
-        .send({ message: `not valid cardId ( _id=${cardId} )` });
+      const badRequestError = new BadRequestError(
+        responseMessage.NOT_VALID_CARD_ID,
+      );
+      return next(badRequestError);
     }
-    if (error instanceof Error && error.name === 'NotFoundError') {
-      return res
-        .status(constants.HTTP_STATUS_NOT_FOUND)
-        .send({ message: `card with _id=${cardId} not found` });
-    }
-    return res.send({ error });
+    return next(error);
   }
 };
 
-export const removeLikeFromCard = async (req: Request, res: Response) => {
+export const removeLikeFromCard = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   const { cardId } = req.params;
   const userId = req.body.owner._id;
   try {
@@ -95,22 +100,16 @@ export const removeLikeFromCard = async (req: Request, res: Response) => {
       { $pull: { likes: userId } },
       { new: true },
     ).orFail(() => {
-      const error = new Error('card not found');
-      error.name = 'NotFoundError';
-      return error;
+      throw new NotFoundError(responseMessage.CARD_NOT_FOUND);
     });
     return res.send(await Card.findById(cardId));
   } catch (error) {
     if (error instanceof MongooseError.CastError) {
-      return res
-        .status(constants.HTTP_STATUS_BAD_REQUEST)
-        .send({ message: `not valid cardId ( _id=${cardId} )` });
+      const badRequestError = new BadRequestError(
+        responseMessage.NOT_VALID_USER_ID,
+      );
+      return next(badRequestError);
     }
-    if (error instanceof Error && error.name === 'NotFoundError') {
-      return res
-        .status(constants.HTTP_STATUS_NOT_FOUND)
-        .send({ message: `card with _id=${cardId} not found` });
-    }
-    return res.send({ error });
+    return next(error);
   }
 };
