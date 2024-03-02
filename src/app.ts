@@ -9,7 +9,7 @@ import express, {
 import mongoose from 'mongoose';
 import userRouter from './user/user.router';
 import cardRouter from './card/card.router';
-import errorText from './constants/errors';
+import errorRootController from './error/error-root-controller';
 
 const { PORT = 3000, MONGO_URL = '' } = process.env;
 
@@ -22,8 +22,8 @@ app.use(json());
 app.use((req: Request, res: Response, next: NextFunction) => {
   req.body.owner = {
     // _id: '65de189c8e847fc7a0bcba28',
-    _id: '65e0d0f7703dfa90c8498c1e', // Tom
-    // _id: '65de18ba8e847fc7a0bcba2b', // Bob
+    // _id: '65e0d0f7703dfa90c8498c1e', // Tom
+    _id: '65de18ba8e847fc7a0bcba2b', // Bob
     // _id: '65de189c8e847fc7a0bcba29', // Alex
   };
   next();
@@ -34,15 +34,7 @@ router.use('/cards', cardRouter);
 
 app.use(router);
 
-app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-  console.log(err);
-  if (err.message === errorText.CELEBRATE_VALIDATION_FAILED) {
-    res.send({ message: errorText.REQUEST_BODY_IS_NOT_VALID });
-  } else {
-    res.send({ message: err.message });
-  }
-  next();
-});
+app.use(errorRootController);
 
 const connect = async () => {
   try {
