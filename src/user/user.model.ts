@@ -10,6 +10,12 @@ const userSchema = new mongoose.Schema<User>(
       minlength: [2, 'Минимальная длина 2 символа'],
       maxlength: [30, 'Максимальная длина 30 символов'],
     },
+    email: {
+      type: String,
+    },
+    password: {
+      type: String,
+    },
     about: {
       type: String,
       required: [true, 'Поле обязательно для заполнения'],
