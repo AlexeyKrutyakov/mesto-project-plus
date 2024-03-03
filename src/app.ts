@@ -7,6 +7,7 @@ import express, {
   json,
 } from 'express';
 import mongoose from 'mongoose';
+import { errors } from 'celebrate';
 import userRouter from './user/user.router';
 import cardRouter from './card/card.router';
 import errorRootController from './error/error-root-controller';
@@ -34,6 +35,7 @@ router.use('/cards', cardRouter);
 
 app.use(router);
 
+app.use(errors());
 app.use(errorRootController);
 
 const connect = async () => {
