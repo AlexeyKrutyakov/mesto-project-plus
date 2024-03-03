@@ -19,10 +19,7 @@ export default (
   };
 
   if (statusCode === constants.HTTP_STATUS_INTERNAL_SERVER_ERROR) {
-    error.message = responseMessage.INTERNAL_SERVER_ERROR;
-  }
-  if (message === responseMessage.CELEBRATE_VALIDATION_FAILED) {
-    error.message = responseMessage.REQUEST_BODY_IS_NOT_VALID;
+    error.message = responseMessage.DEFAULT_ERROR;
   }
 
   res.status(error.statusCode).send({ message: error.message });
