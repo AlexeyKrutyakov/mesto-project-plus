@@ -30,7 +30,7 @@ export const createCard = async (
   } catch (error) {
     if (error instanceof MongooseError.ValidationError) {
       const badRequestError = new BadRequestError(
-        responseMessage.NOT_VALID_CARD_ID,
+        responseMessage.NOT_VALID_USER_ID,
       );
       return next(badRequestError);
     }
@@ -79,7 +79,7 @@ export const addLikeToCard = async (
   } catch (error) {
     if (error instanceof MongooseError.CastError) {
       const badRequestError = new BadRequestError(
-        responseMessage.NOT_VALID_CARD_ID,
+        responseMessage.NOT_VALID_CARD_OR_USER_ID,
       );
       return next(badRequestError);
     }
@@ -105,8 +105,9 @@ export const removeLikeFromCard = async (
     return res.send(await Card.findById(cardId));
   } catch (error) {
     if (error instanceof MongooseError.CastError) {
+      console.log(error);
       const badRequestError = new BadRequestError(
-        responseMessage.NOT_VALID_USER_ID,
+        responseMessage.NOT_VALID_CARD_OR_USER_ID,
       );
       return next(badRequestError);
     }

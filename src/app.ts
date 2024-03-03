@@ -21,9 +21,7 @@ app.use(json());
 // todo remove hardCode later
 app.use((req: Request, res: Response, next: NextFunction) => {
   req.body.owner = {
-    // _id: '65de189c8e847fc7a0bcba28',
-    // _id: '65e0d0f7703dfa90c8498c1e', // Tom
-    _id: '65de18ba8e847fc7a0bcba2b', // Bob
+    _id: '65e4cb1ae7c022fcf5f2a541', // Naomi
     // _id: '65de189c8e847fc7a0bcba29', // Alex
   };
   next();

@@ -1,3 +1,4 @@
+// import 'dotenv/config';
 import { NextFunction, Request, Response } from 'express';
 import { constants } from 'http2';
 import { Error as MongooseError } from 'mongoose';
@@ -7,6 +8,9 @@ import BadRequestError from '../error/bad-request-error';
 import NotFoundError from '../error/not-found-error';
 import responseMessage from '../constants/responseMessages';
 import User from './user.model';
+// import InternalServerError from '../error/internal-server-error';
+
+// const { HASH_SALT = 'superpupeR secret sTrinG' } = process.env;
 
 export const getUsers = async (
   req: Request,
@@ -103,6 +107,32 @@ export const updateUserAvatar = async (
     });
     return res.send(await User.findById(_id));
   } catch (error) {
+    if (error instanceof MongooseError.CastError) {
+      const badRequestError = new BadRequestError(
+        responseMessage.NOT_VALID_USER_ID,
+      );
+      return next(badRequestError);
+    }
     return next(error);
   }
 };
+
+// export const login = async (
+//   req: Request,
+//   res: Response,
+//   next: NextFunction,
+// ) => {
+//   try {
+//     const { email, password } = req.body;
+//     // const user = await User.find({ email }).orFail(() => {
+//     //   throw new BadRequestError(responseMessage.WRONG_EMAIL_OR_PASSWORD);
+//     // });
+//     bcrypt.compare(password, password, () => {});
+//     await User.find({ email, password }).orFail(() => {
+//       throw new NotFoundError(responseMessage.WRONG_EMAIL_OR_PASSWORD);
+//     });
+//     return res.send('jwt');
+//   } catch (error) {
+//     return next(error);
+//   }
+// };
