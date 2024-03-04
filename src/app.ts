@@ -8,17 +8,23 @@ import express, {
 } from 'express';
 import mongoose from 'mongoose';
 import { Joi, celebrate } from 'celebrate';
+import cookieParser from 'cookie-parser';
 import userRouter from './user/user.router';
 import cardRouter from './card/card.router';
 import errorRootController from './error/error-root-controller';
 import { createUser, login } from './user/user.controllers';
+import authMiddleware from './middlewares/auth';
 
-const { PORT = 3000, MONGO_URL = '' } = process.env;
+// eslint-disable-next-line operator-linebreak
+const { PORT = 3000, MONGO_URL = 'mongodb://127.0.0.1:27017/mestodb' } =
+  process.env;
 
 const app = express();
 const router = Router();
 
+app.use(cookieParser());
 app.use(json());
+app.use(authMiddleware);
 
 app.post(
   '/signin',

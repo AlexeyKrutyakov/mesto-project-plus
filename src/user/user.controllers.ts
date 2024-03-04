@@ -11,7 +11,7 @@ import responseMessage from '../constants/responseMessages';
 import User from './user.model';
 import UnauthorizedError from '../error/unauthorized-error';
 
-const { SECRET_KEY = 'secretKey' } = process.env;
+const { SECRET_KEY = 'superpupeR secret sTrinG' } = process.env;
 
 export const getUsers = async (
   req: Request,
@@ -140,6 +140,7 @@ export const login = async (
       });
       res.cookie('jwt', token, {
         maxAge: 3600000 * 24 * 7,
+        // maxAge: 1000,
         httpOnly: true,
       });
     }
