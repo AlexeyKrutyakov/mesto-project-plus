@@ -1,5 +1,6 @@
 const responseMessage = {
   CARD_WAS_DELETED: 'Card was deleted',
+  SUCCESSFUL_AUTHORIZATION: 'You are successfully logged in',
   DEFAULT_ERROR: 'Default error',
   REQUEST_BODY_IS_NOT_VALID: 'Data in request body is not valid, check it',
   CELEBRATE_VALIDATION_FAILED: 'Validation failed',

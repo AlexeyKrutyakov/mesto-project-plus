@@ -1,14 +1,17 @@
-// import 'dotenv/config';
+import 'dotenv/config';
 import { NextFunction, Request, Response } from 'express';
 import { constants } from 'http2';
 import { Error as MongooseError } from 'mongoose';
 import bcrypt from 'bcrypt';
 import validator from 'validator';
+import jwt from 'jsonwebtoken';
 import BadRequestError from '../error/bad-request-error';
 import NotFoundError from '../error/not-found-error';
 import responseMessage from '../constants/responseMessages';
 import User from './user.model';
-import InternalServerError from '../error/internal-server-error';
+import UnauthorizedError from '../error/unauthorized-error';
+
+const { SECRET_KEY = 'secretKey' } = process.env;
 
 export const getUsers = async (
   req: Request,
@@ -125,16 +128,22 @@ export const login = async (
     const user = await User.findOne({ email })
       .select('+password')
       .orFail(() => {
-        throw new BadRequestError(responseMessage.WRONG_EMAIL_OR_PASSWORD);
+        throw new UnauthorizedError(responseMessage.WRONG_EMAIL_OR_PASSWORD);
       });
     if (user) {
       const passwordIsCorrect = await bcrypt.compare(password, user.password);
       if (!passwordIsCorrect) {
-        throw new BadRequestError(responseMessage.WRONG_EMAIL_OR_PASSWORD);
+        throw new UnauthorizedError(responseMessage.WRONG_EMAIL_OR_PASSWORD);
       }
-      return res.send('jwt');
+      const token = jwt.sign({ _id: user._id }, SECRET_KEY, {
+        expiresIn: '7d',
+      });
+      res.cookie('jwt', token, {
+        maxAge: 3600000 * 24 * 7,
+        httpOnly: true,
+      });
     }
-    throw new InternalServerError(responseMessage.INTERNAL_SERVER_ERROR);
+    return res.send({ message: responseMessage.SUCCESSFUL_AUTHORIZATION });
   } catch (error) {
     return next(error);
   }
