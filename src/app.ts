@@ -7,9 +7,11 @@ import express, {
   json,
 } from 'express';
 import mongoose from 'mongoose';
+import { Joi, celebrate } from 'celebrate';
 import userRouter from './user/user.router';
 import cardRouter from './card/card.router';
 import errorRootController from './error/error-root-controller';
+import { createUser, login } from './user/user.controllers';
 
 const { PORT = 3000, MONGO_URL = '' } = process.env;
 
@@ -17,6 +19,32 @@ const app = express();
 const router = Router();
 
 app.use(json());
+
+app.post(
+  '/signin',
+  celebrate({
+    body: Joi.object().keys({
+      email: Joi.string().required(),
+      password: Joi.string().required().min(8),
+    }),
+  }),
+  login,
+);
+app.post(
+  '/signup',
+  celebrate({
+    body: Joi.object()
+      .keys({
+        email: Joi.string().required(),
+        password: Joi.string().required().min(8),
+        name: Joi.string().min(2).max(30),
+        about: Joi.string().min(2).max(200),
+        avatar: Joi.string(),
+      })
+      .unknown(true),
+  }),
+  createUser,
+);
 
 // todo remove hardCode later
 app.use((req: Request, res: Response, next: NextFunction) => {

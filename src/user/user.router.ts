@@ -13,34 +13,7 @@ const userRouter = Router();
 
 userRouter.get('/', getUsers);
 
-userRouter.get(
-  '/login',
-  celebrate({
-    body: Joi.object().keys({
-      email: Joi.string().required(),
-      password: Joi.string().required().min(8),
-    }),
-  }),
-  login,
-);
-
 userRouter.get('/:userId', getUserById);
-
-userRouter.post(
-  '/',
-  celebrate({
-    body: Joi.object()
-      .keys({
-        email: Joi.string().required(),
-        password: Joi.string().required().min(8),
-        name: Joi.string().min(2).max(30),
-        about: Joi.string().min(2).max(200),
-        avatar: Joi.string(),
-      })
-      .unknown(true),
-  }),
-  createUser,
-);
 
 userRouter.patch(
   '/me',
