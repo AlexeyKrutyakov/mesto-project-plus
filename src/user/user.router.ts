@@ -4,7 +4,7 @@ import {
   createUser,
   getUserById,
   getUsers,
-  // login,
+  login,
   updateUserAvatar,
   updateUserInfo,
 } from './user.controllers';
@@ -13,16 +13,16 @@ const userRouter = Router();
 
 userRouter.get('/', getUsers);
 
-// userRouter.get(
-//   '/login',
-//   celebrate({
-//     body: Joi.object().keys({
-//       email: Joi.string().required(),
-//       password: Joi.string().required().min(8),
-//     }),
-//   }),
-//   login,
-// );
+userRouter.get(
+  '/login',
+  celebrate({
+    body: Joi.object().keys({
+      email: Joi.string().required(),
+      password: Joi.string().required().min(8),
+    }),
+  }),
+  login,
+);
 
 userRouter.get('/:userId', getUserById);
 

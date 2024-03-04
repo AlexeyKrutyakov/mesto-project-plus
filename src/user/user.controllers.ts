@@ -8,9 +8,7 @@ import BadRequestError from '../error/bad-request-error';
 import NotFoundError from '../error/not-found-error';
 import responseMessage from '../constants/responseMessages';
 import User from './user.model';
-// import InternalServerError from '../error/internal-server-error';
-
-// const { HASH_SALT = 'superpupeR secret sTrinG' } = process.env;
+import InternalServerError from '../error/internal-server-error';
 
 export const getUsers = async (
   req: Request,
@@ -117,22 +115,27 @@ export const updateUserAvatar = async (
   }
 };
 
-// export const login = async (
-//   req: Request,
-//   res: Response,
-//   next: NextFunction,
-// ) => {
-//   try {
-//     const { email, password } = req.body;
-//     // const user = await User.find({ email }).orFail(() => {
-//     //   throw new BadRequestError(responseMessage.WRONG_EMAIL_OR_PASSWORD);
-//     // });
-//     bcrypt.compare(password, password, () => {});
-//     await User.find({ email, password }).orFail(() => {
-//       throw new NotFoundError(responseMessage.WRONG_EMAIL_OR_PASSWORD);
-//     });
-//     return res.send('jwt');
-//   } catch (error) {
-//     return next(error);
-//   }
-// };
+export const login = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { email, password } = req.body;
+    const user = await User.findOne({ email })
+      .select('+password')
+      .orFail(() => {
+        throw new BadRequestError(responseMessage.WRONG_EMAIL_OR_PASSWORD);
+      });
+    if (user) {
+      const passwordIsCorrect = await bcrypt.compare(password, user.password);
+      if (!passwordIsCorrect) {
+        throw new BadRequestError(responseMessage.WRONG_EMAIL_OR_PASSWORD);
+      }
+      return res.send('jwt');
+    }
+    throw new InternalServerError(responseMessage.INTERNAL_SERVER_ERROR);
+  } catch (error) {
+    return next(error);
+  }
+};

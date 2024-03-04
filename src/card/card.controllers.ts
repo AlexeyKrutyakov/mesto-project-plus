@@ -105,7 +105,6 @@ export const removeLikeFromCard = async (
     return res.send(await Card.findById(cardId));
   } catch (error) {
     if (error instanceof MongooseError.CastError) {
-      console.log(error);
       const badRequestError = new BadRequestError(
         responseMessage.NOT_VALID_CARD_OR_USER_ID,
       );
