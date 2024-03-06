@@ -8,6 +8,7 @@ import cardRouter from './card/card.router';
 import errorRootController from './error/error-root-controller';
 import { createUser, login } from './user/user.controllers';
 import authMiddleware from './middlewares/auth';
+import requestLogger from './middlewares/logger';
 
 // eslint-disable-next-line operator-linebreak
 const { PORT = 3000, MONGO_URL = 'mongodb://127.0.0.1:27017/mestodb' } =
@@ -18,6 +19,8 @@ const router = Router();
 
 app.use(cookieParser());
 app.use(json());
+
+app.use(requestLogger);
 
 app.post(
   '/signin',
