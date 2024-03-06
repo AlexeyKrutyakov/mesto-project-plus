@@ -66,8 +66,6 @@ export const createUser = async (
     }
     const hash = await bcrypt.hash(password, 10);
     const newUser = new User({ name, email, password: hash, about, avatar });
-    // todo ?
-    // User.populate(newUser, ['owner, likes'])
     return res.status(constants.HTTP_STATUS_CREATED).send(await newUser.save());
   } catch (error) {
     return next(error);
@@ -75,12 +73,17 @@ export const createUser = async (
 };
 
 export const updateUserInfo = async (
-  req: Request,
+  req: IRequest,
   res: Response,
   next: NextFunction,
 ) => {
-  const { _id } = req.body.owner;
   const { name, about } = req.body;
+  const _id = req.user?._id;
+
+  if (_id === undefined) {
+    throw new InternalServerError(responseMessage.INTERNAL_SERVER_ERROR);
+  }
+
   try {
     await User.findByIdAndUpdate(_id, { name, about }).orFail(() => {
       throw new NotFoundError(responseMessage.USER_NOT_FOUND);
@@ -98,12 +101,17 @@ export const updateUserInfo = async (
 };
 
 export const updateUserAvatar = async (
-  req: Request,
+  req: IRequest,
   res: Response,
   next: NextFunction,
 ) => {
-  const { _id } = req.body.owner;
   const { avatar } = req.body;
+  const _id = req.user?._id;
+
+  if (_id === undefined) {
+    throw new InternalServerError(responseMessage.INTERNAL_SERVER_ERROR);
+  }
+
   try {
     await User.findByIdAndUpdate(_id, { avatar }).orFail(() => {
       throw new NotFoundError(responseMessage.USER_NOT_FOUND);
@@ -142,7 +150,6 @@ export const login = async (
       });
       res.cookie('jwt', token, {
         maxAge: 3600000 * 24 * 7,
-        // maxAge: 1000,
         httpOnly: true,
       });
     }

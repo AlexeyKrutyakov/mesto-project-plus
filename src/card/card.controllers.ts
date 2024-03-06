@@ -5,6 +5,8 @@ import responseMessage from '../constants/responseMessages';
 import Card from './card.model';
 import BadRequestError from '../error/bad-request-error';
 import NotFoundError from '../error/not-found-error';
+import { IRequest } from '../types/request';
+import InternalServerError from '../error/internal-server-error';
 
 export const getCards = async (
   req: Request,
@@ -20,11 +22,18 @@ export const getCards = async (
 };
 
 export const createCard = async (
-  req: Request,
+  req: IRequest,
   res: Response,
   next: NextFunction,
 ) => {
   try {
+    const _id = req.user?._id;
+
+    if (_id === undefined) {
+      throw new InternalServerError(responseMessage.INTERNAL_SERVER_ERROR);
+    }
+
+    req.body.owner = _id;
     const newCard = new Card(req.body);
     return res.status(constants.HTTP_STATUS_CREATED).send(await newCard.save());
   } catch (error) {
@@ -39,16 +48,31 @@ export const createCard = async (
 };
 
 export const deleteCardById = async (
-  req: Request,
+  req: IRequest,
   res: Response,
   next: NextFunction,
 ) => {
   try {
+    const _id = req.user?._id;
+
+    if (_id === undefined) {
+      throw new InternalServerError(responseMessage.INTERNAL_SERVER_ERROR);
+    }
+
     const { cardId } = req.params;
-    await Card.findByIdAndDelete(cardId).orFail(() => {
+    const card = await Card.findOne({ _id: cardId }).orFail(() => {
       throw new NotFoundError(responseMessage.CARD_NOT_FOUND);
     });
-    return res.send({ message: responseMessage.CARD_WAS_DELETED });
+
+    if (_id === `${card.owner}`) {
+      await Card.findByIdAndDelete(cardId).orFail(() => {
+        throw new InternalServerError(responseMessage.INTERNAL_SERVER_ERROR);
+      });
+
+      return res.send({ message: responseMessage.CARD_WAS_DELETED });
+    }
+
+    return res.send({ message: responseMessage.NOT_PERMISSIONS });
   } catch (error) {
     if (error instanceof MongooseError.CastError) {
       const badRequestError = new BadRequestError(
@@ -61,16 +85,19 @@ export const deleteCardById = async (
 };
 
 export const addLikeToCard = async (
-  req: Request,
+  req: IRequest,
   res: Response,
   next: NextFunction,
 ) => {
   const { cardId } = req.params;
-  const userId = req.body.owner._id;
+  const _id = req.user?._id;
+  if (_id === undefined) {
+    throw new InternalServerError(responseMessage.INTERNAL_SERVER_ERROR);
+  }
   try {
     await Card.findByIdAndUpdate(
       cardId,
-      { $addToSet: { likes: userId } },
+      { $addToSet: { likes: _id } },
       { new: true },
     ).orFail(() => {
       throw new NotFoundError(responseMessage.CARD_NOT_FOUND);
@@ -88,16 +115,21 @@ export const addLikeToCard = async (
 };
 
 export const removeLikeFromCard = async (
-  req: Request,
+  req: IRequest,
   res: Response,
   next: NextFunction,
 ) => {
   const { cardId } = req.params;
-  const userId = req.body.owner._id;
+  const _id = req.user?._id;
+
+  if (_id === undefined) {
+    throw new InternalServerError(responseMessage.INTERNAL_SERVER_ERROR);
+  }
+
   try {
     await Card.findByIdAndUpdate(
       cardId,
-      { $pull: { likes: userId } },
+      { $pull: { likes: _id } },
       { new: true },
     ).orFail(() => {
       throw new NotFoundError(responseMessage.CARD_NOT_FOUND);

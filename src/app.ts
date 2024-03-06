@@ -1,11 +1,5 @@
 import 'dotenv/config';
-import express, {
-  NextFunction,
-  Request,
-  Response,
-  Router,
-  json,
-} from 'express';
+import express, { Router, json } from 'express';
 import mongoose from 'mongoose';
 import { Joi, celebrate } from 'celebrate';
 import cookieParser from 'cookie-parser';
@@ -50,15 +44,6 @@ app.post(
   }),
   createUser,
 );
-
-// todo remove hardCode later
-app.use((req: Request, res: Response, next: NextFunction) => {
-  req.body.owner = {
-    _id: '65e4cb1ae7c022fcf5f2a541', // Naomi
-    // _id: '65de189c8e847fc7a0bcba29', // Alex
-  };
-  next();
-});
 
 app.use(authMiddleware);
 

@@ -1,5 +1,6 @@
 const responseMessage = {
   CARD_WAS_DELETED: 'Card was deleted',
+  NOT_PERMISSIONS: 'You have not permissions for this operation',
   SUCCESSFUL_AUTHORIZATION: 'You are successfully logged in',
   AUTHORIZATION_ERROR: 'Authorization error',
   DEFAULT_ERROR: 'Default error',
