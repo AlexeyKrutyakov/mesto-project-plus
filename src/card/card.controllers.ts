@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import { constants } from 'http2';
 import { Error as MongooseError } from 'mongoose';
-import responseMessage from '../constants/responseMessages';
+import RESPONSE_MESSAGE from '../constants/responseMessages';
 import Card from './card.model';
 import BadRequestError from '../error/bad-request-error';
 import NotFoundError from '../error/not-found-error';
@@ -30,7 +30,7 @@ export const createCard = async (
     const _id = req.user?._id;
 
     if (_id === undefined) {
-      throw new InternalServerError(responseMessage.INTERNAL_SERVER_ERROR);
+      throw new InternalServerError(RESPONSE_MESSAGE.internalServerError);
     }
 
     req.body.owner = _id;
@@ -39,7 +39,7 @@ export const createCard = async (
   } catch (error) {
     if (error instanceof MongooseError.ValidationError) {
       const badRequestError = new BadRequestError(
-        responseMessage.NOT_VALID_USER_ID,
+        RESPONSE_MESSAGE.notValidLinkUrl,
       );
       return next(badRequestError);
     }
@@ -56,27 +56,27 @@ export const deleteCardById = async (
     const _id = req.user?._id;
 
     if (_id === undefined) {
-      throw new InternalServerError(responseMessage.INTERNAL_SERVER_ERROR);
+      throw new InternalServerError(RESPONSE_MESSAGE.internalServerError);
     }
 
     const { cardId } = req.params;
     const card = await Card.findOne({ _id: cardId }).orFail(() => {
-      throw new NotFoundError(responseMessage.CARD_NOT_FOUND);
+      throw new NotFoundError(RESPONSE_MESSAGE.cardNotFound);
     });
 
     if (_id === `${card.owner}`) {
       await Card.findByIdAndDelete(cardId).orFail(() => {
-        throw new InternalServerError(responseMessage.INTERNAL_SERVER_ERROR);
+        throw new InternalServerError(RESPONSE_MESSAGE.internalServerError);
       });
 
-      return res.send({ message: responseMessage.CARD_WAS_DELETED });
+      return res.send({ message: RESPONSE_MESSAGE.cardWasDeleted });
     }
 
-    return res.send({ message: responseMessage.NOT_PERMISSIONS });
+    return res.send({ message: RESPONSE_MESSAGE.notPermissions });
   } catch (error) {
     if (error instanceof MongooseError.CastError) {
       const badRequestError = new BadRequestError(
-        responseMessage.NOT_VALID_CARD_ID,
+        RESPONSE_MESSAGE.notValidCardId,
       );
       return next(badRequestError);
     }
@@ -92,7 +92,7 @@ export const addLikeToCard = async (
   const { cardId } = req.params;
   const _id = req.user?._id;
   if (_id === undefined) {
-    throw new InternalServerError(responseMessage.INTERNAL_SERVER_ERROR);
+    throw new InternalServerError(RESPONSE_MESSAGE.internalServerError);
   }
   try {
     await Card.findByIdAndUpdate(
@@ -100,13 +100,13 @@ export const addLikeToCard = async (
       { $addToSet: { likes: _id } },
       { new: true },
     ).orFail(() => {
-      throw new NotFoundError(responseMessage.CARD_NOT_FOUND);
+      throw new NotFoundError(RESPONSE_MESSAGE.cardNotFound);
     });
     return res.send(await Card.findById(cardId));
   } catch (error) {
     if (error instanceof MongooseError.CastError) {
       const badRequestError = new BadRequestError(
-        responseMessage.NOT_VALID_CARD_OR_USER_ID,
+        RESPONSE_MESSAGE.notValidCardOrUserId,
       );
       return next(badRequestError);
     }
@@ -123,7 +123,7 @@ export const removeLikeFromCard = async (
   const _id = req.user?._id;
 
   if (_id === undefined) {
-    throw new InternalServerError(responseMessage.INTERNAL_SERVER_ERROR);
+    throw new InternalServerError(RESPONSE_MESSAGE.internalServerError);
   }
 
   try {
@@ -132,13 +132,13 @@ export const removeLikeFromCard = async (
       { $pull: { likes: _id } },
       { new: true },
     ).orFail(() => {
-      throw new NotFoundError(responseMessage.CARD_NOT_FOUND);
+      throw new NotFoundError(RESPONSE_MESSAGE.cardNotFound);
     });
     return res.send(await Card.findById(cardId));
   } catch (error) {
     if (error instanceof MongooseError.CastError) {
       const badRequestError = new BadRequestError(
-        responseMessage.NOT_VALID_CARD_OR_USER_ID,
+        RESPONSE_MESSAGE.notValidCardOrUserId,
       );
       return next(badRequestError);
     }

@@ -1,5 +1,7 @@
 import mongoose from 'mongoose';
+import validator from 'validator';
 import { Card } from './card.type';
+import RESPONSE_MESSAGE from '../constants/responseMessages';
 
 const cardSchema = new mongoose.Schema<Card>(
   {
@@ -12,6 +14,10 @@ const cardSchema = new mongoose.Schema<Card>(
     link: {
       type: String,
       required: [true, 'Поле обязательно для заполнения'],
+      validate: {
+        validator: (v: string) => validator.isURL(v),
+        message: RESPONSE_MESSAGE.notValidLinkUrl,
+      },
     },
     owner: {
       type: mongoose.Types.ObjectId,
