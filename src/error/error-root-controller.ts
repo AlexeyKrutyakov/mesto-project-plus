@@ -1,10 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
-import { constants } from 'http2';
 import { TError } from './error.type';
 import convertCelebrateError from '../utils/convertCelebrateError';
 import RESPONSE_MESSAGE from '../constants/responseMessages';
-
-const serverErrorCode = constants.HTTP_STATUS_INTERNAL_SERVER_ERROR;
 
 export default (
   err: TError,
@@ -13,16 +10,25 @@ export default (
   next: NextFunction,
 ) => {
   const error = convertCelebrateError(err);
-  let statusCode = error.statusCode || err.statusCode || serverErrorCode;
-  if (err.message.includes(RESPONSE_MESSAGE.mongooseValidErrMessage)) {
-    statusCode = constants.HTTP_STATUS_BAD_REQUEST;
-  }
 
-  // eslint-disable-next-line operator-linebreak
-  const message =
-    statusCode === serverErrorCode
-      ? RESPONSE_MESSAGE.defaultError
-      : error.message;
+  let { statusCode = 500 } = error;
+  const { message = RESPONSE_MESSAGE.defaultError } = error;
+
+  if (message.includes('email already exists')) {
+    statusCode = 409;
+  } else if (message.includes('email')) {
+    statusCode = 401;
+  } else if (message.includes('password')) {
+    statusCode = 401;
+  } else if (message.includes('avatar')) {
+    statusCode = 400;
+  } else if (message.includes('validation failed')) {
+    statusCode = 400;
+  } else if (message.includes('name')) {
+    statusCode = 400;
+  } else if (message.includes('about')) {
+    statusCode = 400;
+  }
 
   res.status(statusCode).send({ message });
 

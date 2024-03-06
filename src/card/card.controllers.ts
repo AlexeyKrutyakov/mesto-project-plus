@@ -7,6 +7,7 @@ import BadRequestError from '../error/bad-request-error';
 import NotFoundError from '../error/not-found-error';
 import { IRequest } from '../types/request';
 import InternalServerError from '../error/internal-server-error';
+import NoPermissionError from '../error/no-permission';
 
 export const getCards = async (
   req: Request,
@@ -72,7 +73,7 @@ export const deleteCardById = async (
       return res.send({ message: RESPONSE_MESSAGE.cardWasDeleted });
     }
 
-    return res.send({ message: RESPONSE_MESSAGE.notPermissions });
+    throw new NoPermissionError(RESPONSE_MESSAGE.notPermissions);
   } catch (error) {
     if (error instanceof MongooseError.CastError) {
       const badRequestError = new BadRequestError(
