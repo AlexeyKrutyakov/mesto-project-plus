@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { celebrate, Joi } from 'celebrate';
 import {
+  getCurrentUserInfo,
   getUserById,
   getUsers,
   updateUserAvatar,
@@ -10,6 +11,8 @@ import {
 const userRouter = Router();
 
 userRouter.get('/', getUsers);
+
+userRouter.get('/me', getCurrentUserInfo);
 
 userRouter.get('/:userId', getUserById);
 

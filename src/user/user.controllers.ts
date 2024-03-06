@@ -10,6 +10,8 @@ import NotFoundError from '../error/not-found-error';
 import responseMessage from '../constants/responseMessages';
 import User from './user.model';
 import UnauthorizedError from '../error/unauthorized-error';
+import { IRequest } from '../types/request';
+import InternalServerError from '../error/internal-server-error';
 
 const { SECRET_KEY = 'superpupeR secret sTrinG' } = process.env;
 
@@ -145,6 +147,25 @@ export const login = async (
       });
     }
     return res.send({ message: responseMessage.SUCCESSFUL_AUTHORIZATION });
+  } catch (error) {
+    return next(error);
+  }
+};
+
+export const getCurrentUserInfo = async (
+  req: IRequest,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const _id = req.user?._id;
+    if (_id === undefined) {
+      throw new InternalServerError(responseMessage.INTERNAL_SERVER_ERROR);
+    }
+    const user = await User.findOne({ _id }).orFail(() => {
+      throw new InternalServerError(responseMessage.INTERNAL_SERVER_ERROR);
+    });
+    return res.send(user);
   } catch (error) {
     return next(error);
   }
