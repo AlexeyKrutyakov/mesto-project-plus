@@ -24,7 +24,6 @@ const router = Router();
 
 app.use(cookieParser());
 app.use(json());
-app.use(authMiddleware);
 
 app.post(
   '/signin',
@@ -60,6 +59,8 @@ app.use((req: Request, res: Response, next: NextFunction) => {
   };
   next();
 });
+
+app.use(authMiddleware);
 
 router.use('/users', userRouter);
 router.use('/cards', cardRouter);
