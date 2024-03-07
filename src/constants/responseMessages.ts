@@ -1,0 +1,25 @@
+const RESPONSE_MESSAGE = {
+  cardWasDeleted: 'Card was deleted',
+  notPermissions: 'You have not permissions for this operation',
+  successfulAuthorization: 'You are successfully logged in',
+  authorizationError: 'Authorization error',
+  defaultError: 'Default error',
+  requestBodyIsNotValid: 'Data in request body is not valid, check it',
+  celebrateValidationFailed: 'Validation failed',
+  notValidUserId: 'Not valid user id',
+  userNotFound: 'User not found',
+  notValidCardId: 'Not valid card id',
+  cardNotFound: 'Card not found',
+  notValidCardOrUserId: 'Not valid card id or user id',
+  badRequestError: 'Bad Request Error',
+  notFoundError: 'Not Found Error',
+  internalServerError: 'Internal Server Error',
+  userAlreadyExists: 'User with the specified email already exists',
+  wrongEmailOrPassword: 'Wrong email or password',
+  mongooseValidErrMessage: 'validation failed',
+  notValidEmail: 'Not valid email value',
+  notValidAvatar: 'Not valid avatar url',
+  notValidLinkUrl: 'Not valid link url',
+};
+
+export default RESPONSE_MESSAGE;
