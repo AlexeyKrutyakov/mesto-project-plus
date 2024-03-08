@@ -4,7 +4,6 @@ import { constants } from 'http2';
 import { Error as MongooseError } from 'mongoose';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import validator from 'validator';
 import BadRequestError from '../error/bad-request-error';
 import NotFoundError from '../error/not-found-error';
 import RESPONSE_MESSAGE from '../constants/responseMessages';
@@ -13,7 +12,6 @@ import UnauthorizedError from '../error/unauthorized-error';
 import { IRequest } from '../types/request';
 import InternalServerError from '../error/internal-server-error';
 import DEFAULT_USER from '../constants/defaultUser';
-// import isAvatarValid from '../utils/validate-avatar';
 
 const { SECRET_KEY = 'superpupeR secret sTrinG' } = process.env;
 
@@ -90,10 +88,14 @@ export const updateUserInfo = async (
   }
 
   try {
-    await User.findByIdAndUpdate(_id, { name, about }).orFail(() => {
+    const updatedUser = await User.findByIdAndUpdate(
+      _id,
+      { name, about },
+      { new: true, runValidators: true },
+    ).orFail(() => {
       throw new NotFoundError(RESPONSE_MESSAGE.userNotFound);
     });
-    return res.send(await User.findById(_id));
+    return res.send(await updatedUser);
   } catch (error) {
     if (error instanceof MongooseError.CastError) {
       const badRequestError = new BadRequestError(
@@ -114,18 +116,18 @@ export const updateUserAvatar = async (
     const { avatar } = req.body;
     const _id = req.user?._id;
 
-    if (!validator.isURL(avatar)) {
-      throw new BadRequestError(RESPONSE_MESSAGE.notValidAvatar);
-    }
-
     if (_id === undefined) {
       throw new InternalServerError(RESPONSE_MESSAGE.internalServerError);
     }
 
-    await User.findByIdAndUpdate(_id, { avatar }).orFail(() => {
+    const updatedUser = await User.findByIdAndUpdate(
+      _id,
+      { avatar },
+      { new: true, runValidators: true },
+    ).orFail(() => {
       throw new NotFoundError(RESPONSE_MESSAGE.userNotFound);
     });
-    return res.send(await User.findById(_id));
+    return res.send(updatedUser);
   } catch (error) {
     if (error instanceof MongooseError.CastError) {
       const badRequestError = new BadRequestError(
