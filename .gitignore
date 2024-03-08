@@ -19,3 +19,7 @@ dist
 
 # Format code settings
 .prettierrc
+.editorconfig
+
+# environment
+.env
