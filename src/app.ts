@@ -4,6 +4,7 @@ import mongoose from 'mongoose';
 import { Joi, celebrate } from 'celebrate';
 import cookieParser from 'cookie-parser';
 import { rateLimit } from 'express-rate-limit';
+import helmet from 'helmet';
 import userRouter from './user/user.router';
 import cardRouter from './card/card.router';
 import errorRootController from './error/error-root-controller';
@@ -25,7 +26,9 @@ const limiter = rateLimit({
 const app = express();
 const router = Router();
 
+app.use(helmet);
 app.use(limiter);
+
 app.use(cookieParser());
 app.use(json());
 
