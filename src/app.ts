@@ -3,6 +3,7 @@ import express, { Router, json } from 'express';
 import mongoose from 'mongoose';
 import { Joi, celebrate } from 'celebrate';
 import cookieParser from 'cookie-parser';
+import { rateLimit } from 'express-rate-limit';
 import userRouter from './user/user.router';
 import cardRouter from './card/card.router';
 import errorRootController from './error/error-root-controller';
@@ -14,9 +15,17 @@ import { requestsLogger, errorsLogger } from './middlewares/logger';
 const { PORT = 3000, MONGO_URL = 'mongodb://127.0.0.1:27017/mestodb' } =
   process.env;
 
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  limit: 100,
+  standardHeaders: 'draft-7',
+  legacyHeaders: false,
+});
+
 const app = express();
 const router = Router();
 
+app.use(limiter);
 app.use(cookieParser());
 app.use(json());
 
