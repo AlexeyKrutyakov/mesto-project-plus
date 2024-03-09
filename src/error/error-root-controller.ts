@@ -11,21 +11,20 @@ export default (
 ) => {
   const error = convertCelebrateError(err);
 
-  let { statusCode = 500, message = RESPONSE_MESSAGE.defaultError } = error;
+  let { statusCode = 500, message } = error;
 
-  if (message.includes('email already exists')) {
-    statusCode = 409;
-  } else if (message.includes('email')) {
-    statusCode = 401;
-  } else if (message.includes('password')) {
-    statusCode = 401;
-  } else if (message.includes('avatar')) {
-    statusCode = 400;
-  } else if (message.includes('validation failed')) {
-    statusCode = 400;
-  } else if (message.includes('name')) {
-    statusCode = 400;
-  } else if (message.includes('about')) {
+  if (error.name === 'MongoServerError') {
+    if (error.message.includes('E11000')) {
+      statusCode = 409;
+      message = RESPONSE_MESSAGE.userAlreadyExists;
+    } else {
+      statusCode = 400;
+    }
+  } else if (
+    // eslint-disable-next-line operator-linebreak
+    error.name === 'ValidationError' ||
+    error.name === 'CelebrateError'
+  ) {
     statusCode = 400;
   }
 
