@@ -6,7 +6,6 @@ import Card from './card.model';
 import BadRequestError from '../error/bad-request-error';
 import NotFoundError from '../error/not-found-error';
 import { IRequest } from '../types/request';
-import InternalServerError from '../error/internal-server-error';
 import NoPermissionError from '../error/no-permission';
 
 export const getCards = async (
@@ -58,10 +57,7 @@ export const deleteCardById = async (
     });
 
     if (_id === `${card.owner}`) {
-      await Card.findByIdAndDelete(cardId).orFail(() => {
-        throw new InternalServerError(RESPONSE_MESSAGE.internalServerError);
-      });
-
+      await card.deleteOne();
       return res.send({ message: RESPONSE_MESSAGE.cardWasDeleted });
     }
 
