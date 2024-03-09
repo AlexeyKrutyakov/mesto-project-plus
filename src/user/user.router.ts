@@ -7,6 +7,7 @@ import {
   updateUserAvatar,
   updateUserInfo,
 } from './user.controllers';
+import REGEXP from '../constants/regexp';
 
 const userRouter = Router();
 
@@ -14,7 +15,15 @@ userRouter.get('/', getUsers);
 
 userRouter.get('/me', getCurrentUserInfo);
 
-userRouter.get('/:userId', getUserById);
+userRouter.get(
+  '/:userId',
+  celebrate({
+    params: Joi.object().keys({
+      userId: Joi.string().regex(REGEXP.mongoObjectId).required(),
+    }),
+  }),
+  getUserById,
+);
 
 userRouter.patch(
   '/me',

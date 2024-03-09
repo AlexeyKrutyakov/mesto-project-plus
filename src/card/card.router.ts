@@ -7,10 +7,12 @@ import {
   getCards,
   removeLikeFromCard,
 } from './card.controllers';
+import REGEXP from '../constants/regexp';
 
 const cardRouter = Router();
 
 cardRouter.get('/', getCards);
+
 cardRouter.post(
   '/',
   celebrate({
@@ -23,8 +25,35 @@ cardRouter.post(
   }),
   createCard,
 );
-cardRouter.delete('/:cardId', deleteCardById);
-cardRouter.put('/:cardId/likes', addLikeToCard);
-cardRouter.delete('/:cardId/likes', removeLikeFromCard);
+
+cardRouter.delete(
+  '/:cardId',
+  celebrate({
+    params: Joi.object().keys({
+      cardId: Joi.string().regex(REGEXP.mongoObjectId).required(),
+    }),
+  }),
+  deleteCardById,
+);
+
+cardRouter.put(
+  '/:cardId/likes',
+  celebrate({
+    params: Joi.object().keys({
+      cardId: Joi.string().regex(REGEXP.mongoObjectId).required(),
+    }),
+  }),
+  addLikeToCard,
+);
+
+cardRouter.delete(
+  '/:cardId/likes',
+  celebrate({
+    params: Joi.object().keys({
+      cardId: Joi.string().regex(REGEXP.mongoObjectId).required(),
+    }),
+  }),
+  removeLikeFromCard,
+);
 
 export default cardRouter;
