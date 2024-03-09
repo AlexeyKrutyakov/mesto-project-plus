@@ -43,7 +43,7 @@ userRouter.patch(
   celebrate({
     body: Joi.object()
       .keys({
-        avatar: Joi.string().required(),
+        avatar: Joi.string().regex(REGEXP.url).required(),
       })
       .unknown(true),
   }),

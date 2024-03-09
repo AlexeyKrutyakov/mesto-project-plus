@@ -11,6 +11,7 @@ import errorRootController from './error/error-root-controller';
 import { createUser, login } from './user/user.controllers';
 import authMiddleware from './middlewares/auth';
 import { requestsLogger, errorsLogger } from './middlewares/logger';
+import REGEXP from './constants/regexp';
 
 // eslint-disable-next-line operator-linebreak
 const { PORT = 3000, MONGO_URL = 'mongodb://127.0.0.1:27017/mestodb' } =
@@ -38,7 +39,7 @@ app.post(
   '/signin',
   celebrate({
     body: Joi.object().keys({
-      email: Joi.string().required(),
+      email: Joi.string().regex(REGEXP.email).required(),
       password: Joi.string().required().min(8),
     }),
   }),
@@ -49,11 +50,11 @@ app.post(
   celebrate({
     body: Joi.object()
       .keys({
-        email: Joi.string().required(),
+        email: Joi.string().regex(REGEXP.email).required(),
         password: Joi.string().required().min(8),
         name: Joi.string().min(2).max(30),
         about: Joi.string().min(2).max(200),
-        avatar: Joi.string(),
+        avatar: Joi.string().regex(REGEXP.url),
       })
       .unknown(true),
   }),
