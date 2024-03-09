@@ -87,14 +87,9 @@ export const updateUserInfo = async (
     ).orFail(() => {
       throw new NotFoundError(RESPONSE_MESSAGE.userNotFound);
     });
-    return res.send(await updatedUser);
+
+    return res.send(updatedUser);
   } catch (error) {
-    if (error instanceof MongooseError.CastError) {
-      const badRequestError = new BadRequestError(
-        RESPONSE_MESSAGE.notValidUserId,
-      );
-      return next(badRequestError);
-    }
     return next(error);
   }
 };
@@ -115,14 +110,9 @@ export const updateUserAvatar = async (
     ).orFail(() => {
       throw new NotFoundError(RESPONSE_MESSAGE.userNotFound);
     });
+
     return res.send(updatedUser);
   } catch (error) {
-    if (error instanceof MongooseError.CastError) {
-      const badRequestError = new BadRequestError(
-        RESPONSE_MESSAGE.notValidUserId,
-      );
-      return next(badRequestError);
-    }
     return next(error);
   }
 };
