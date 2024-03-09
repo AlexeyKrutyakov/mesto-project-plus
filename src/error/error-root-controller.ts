@@ -11,8 +11,7 @@ export default (
 ) => {
   const error = convertCelebrateError(err);
 
-  let { statusCode = 500 } = error;
-  const { message = RESPONSE_MESSAGE.defaultError } = error;
+  let { statusCode = 500, message = RESPONSE_MESSAGE.defaultError } = error;
 
   if (message.includes('email already exists')) {
     statusCode = 409;
@@ -28,6 +27,10 @@ export default (
     statusCode = 400;
   } else if (message.includes('about')) {
     statusCode = 400;
+  }
+
+  if (statusCode === 500) {
+    message = RESPONSE_MESSAGE.defaultError;
   }
 
   res.status(statusCode).send({ message });
