@@ -62,10 +62,7 @@ export const createUser = async (
       about = DEFAULT_USER.about,
       avatar = DEFAULT_USER.avatar,
     } = req.body;
-    const user = await User.find({ email });
-    if (user.length !== 0) {
-      throw new BadRequestError(RESPONSE_MESSAGE.userAlreadyExists);
-    }
+
     const hash = await bcrypt.hash(password, 10);
     const newUser = new User({ name, email, password: hash, about, avatar });
     return res.status(constants.HTTP_STATUS_CREATED).send(await newUser.save());
