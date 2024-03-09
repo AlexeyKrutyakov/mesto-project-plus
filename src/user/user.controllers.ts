@@ -10,7 +10,6 @@ import RESPONSE_MESSAGE from '../constants/responseMessages';
 import User from './user.model';
 import UnauthorizedError from '../error/unauthorized-error';
 import { IRequest } from '../types/request';
-import InternalServerError from '../error/internal-server-error';
 import DEFAULT_USER from '../constants/defaultUser';
 
 const { SECRET_KEY = 'superpupeR secret sTrinG' } = process.env;
@@ -83,10 +82,6 @@ export const updateUserInfo = async (
   const { name, about } = req.body;
   const _id = req.user?._id;
 
-  if (_id === undefined) {
-    throw new InternalServerError(RESPONSE_MESSAGE.internalServerError);
-  }
-
   try {
     const updatedUser = await User.findByIdAndUpdate(
       _id,
@@ -115,10 +110,6 @@ export const updateUserAvatar = async (
   try {
     const { avatar } = req.body;
     const _id = req.user?._id;
-
-    if (_id === undefined) {
-      throw new InternalServerError(RESPONSE_MESSAGE.internalServerError);
-    }
 
     const updatedUser = await User.findByIdAndUpdate(
       _id,
@@ -177,12 +168,8 @@ export const getCurrentUserInfo = async (
 ) => {
   try {
     const _id = req.user?._id;
-    if (_id === undefined) {
-      throw new InternalServerError(RESPONSE_MESSAGE.internalServerError);
-    }
-    const user = await User.findOne({ _id }).orFail(() => {
-      throw new InternalServerError(RESPONSE_MESSAGE.internalServerError);
-    });
+
+    const user = await User.findOne({ _id }).orFail();
     return res.send(user);
   } catch (error) {
     return next(error);
