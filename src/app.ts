@@ -1,24 +1,18 @@
 import express, { json } from 'express';
 import mongoose from 'mongoose';
 import cookieParser from 'cookie-parser';
-import { rateLimit } from 'express-rate-limit';
 import helmet from 'helmet';
 import config from './config';
 import errorRootController from './error/error-root-controller';
+import rateLimiter from './middlewares/rate-limiter';
 import { requestsLogger, errorsLogger } from './middlewares/logger';
 import rootRouter from './routes';
-
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  limit: 100,
-  standardHeaders: 'draft-7',
-  legacyHeaders: false,
-});
 
 const app = express();
 
 app.use(helmet());
-app.use(limiter);
+
+app.use(rateLimiter);
 
 app.use(cookieParser());
 
