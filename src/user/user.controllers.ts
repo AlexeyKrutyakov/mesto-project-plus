@@ -1,4 +1,4 @@
-import 'dotenv/config';
+// import 'dotenv/config';
 import { NextFunction, Request, Response } from 'express';
 import { constants } from 'http2';
 import { Error as MongooseError } from 'mongoose';
@@ -117,7 +117,7 @@ export const updateUserAvatar = async (
   }
 };
 
-export const login = async (
+export const signin = async (
   req: Request,
   res: Response,
   next: NextFunction,
