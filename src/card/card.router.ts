@@ -1,5 +1,4 @@
 import { Router } from 'express';
-import { celebrate, Joi } from 'celebrate';
 import {
   addLikeToCard,
   createCard,
@@ -7,52 +6,21 @@ import {
   getCards,
   removeLikeFromCard,
 } from './card.controllers';
-import REGEXP from '../constants/regexp';
+import validateRequestData from '../middlewares/validators';
 
 const cardRouter = Router();
 
 cardRouter.get('/', getCards);
 
-cardRouter.post(
-  '/',
-  celebrate({
-    body: Joi.object()
-      .keys({
-        name: Joi.string().required().min(2).max(30),
-        link: Joi.string().regex(REGEXP.url).required(),
-      })
-      .unknown(true),
-  }),
-  createCard,
-);
+cardRouter.post('/', validateRequestData.card.create, createCard);
 
-cardRouter.delete(
-  '/:cardId',
-  celebrate({
-    params: Joi.object().keys({
-      cardId: Joi.string().regex(REGEXP.mongoObjectId).required(),
-    }),
-  }),
-  deleteCardById,
-);
+cardRouter.delete('/:cardId', validateRequestData.card.id, deleteCardById);
 
-cardRouter.put(
-  '/:cardId/likes',
-  celebrate({
-    params: Joi.object().keys({
-      cardId: Joi.string().regex(REGEXP.mongoObjectId).required(),
-    }),
-  }),
-  addLikeToCard,
-);
+cardRouter.put('/:cardId/likes', validateRequestData.card.id, addLikeToCard);
 
 cardRouter.delete(
   '/:cardId/likes',
-  celebrate({
-    params: Joi.object().keys({
-      cardId: Joi.string().regex(REGEXP.mongoObjectId).required(),
-    }),
-  }),
+  validateRequestData.card.id,
   removeLikeFromCard,
 );
 
