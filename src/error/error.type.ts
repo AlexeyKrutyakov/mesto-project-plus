@@ -1,4 +1,3 @@
-export type TError = {
+export type TError = Error & {
   statusCode?: number;
-  message: string;
 };

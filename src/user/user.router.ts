@@ -1,5 +1,4 @@
 import { Router } from 'express';
-import { celebrate, Joi } from 'celebrate';
 import {
   getCurrentUserInfo,
   getUserById,
@@ -7,6 +6,7 @@ import {
   updateUserAvatar,
   updateUserInfo,
 } from './user.controllers';
+import validateRequestData from '../middlewares/validators';
 
 const userRouter = Router();
 
@@ -14,30 +14,13 @@ userRouter.get('/', getUsers);
 
 userRouter.get('/me', getCurrentUserInfo);
 
-userRouter.get('/:userId', getUserById);
+userRouter.get('/:userId', validateRequestData.user.id, getUserById);
 
-userRouter.patch(
-  '/me',
-  celebrate({
-    body: Joi.object()
-      .keys({
-        name: Joi.string().required().min(2).max(30),
-        about: Joi.string().required().min(2).max(200),
-      })
-      .unknown(true),
-  }),
-  updateUserInfo,
-);
+userRouter.patch('/me', validateRequestData.user.updateInfo, updateUserInfo);
 
 userRouter.patch(
   '/me/avatar',
-  celebrate({
-    body: Joi.object()
-      .keys({
-        avatar: Joi.string().required(),
-      })
-      .unknown(true),
-  }),
+  validateRequestData.user.updateAvatar,
   updateUserAvatar,
 );
 

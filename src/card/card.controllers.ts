@@ -6,7 +6,6 @@ import Card from './card.model';
 import BadRequestError from '../error/bad-request-error';
 import NotFoundError from '../error/not-found-error';
 import { IRequest } from '../types/request';
-import InternalServerError from '../error/internal-server-error';
 import NoPermissionError from '../error/no-permission';
 
 export const getCards = async (
@@ -30,10 +29,6 @@ export const createCard = async (
   try {
     const _id = req.user?._id;
 
-    if (_id === undefined) {
-      throw new InternalServerError(RESPONSE_MESSAGE.internalServerError);
-    }
-
     req.body.owner = _id;
     const newCard = new Card(req.body);
     return res.status(constants.HTTP_STATUS_CREATED).send(await newCard.save());
@@ -56,20 +51,13 @@ export const deleteCardById = async (
   try {
     const _id = req.user?._id;
 
-    if (_id === undefined) {
-      throw new InternalServerError(RESPONSE_MESSAGE.internalServerError);
-    }
-
     const { cardId } = req.params;
     const card = await Card.findOne({ _id: cardId }).orFail(() => {
       throw new NotFoundError(RESPONSE_MESSAGE.cardNotFound);
     });
 
     if (_id === `${card.owner}`) {
-      await Card.findByIdAndDelete(cardId).orFail(() => {
-        throw new InternalServerError(RESPONSE_MESSAGE.internalServerError);
-      });
-
+      await card.deleteOne();
       return res.send({ message: RESPONSE_MESSAGE.cardWasDeleted });
     }
 
@@ -92,9 +80,7 @@ export const addLikeToCard = async (
 ) => {
   const { cardId } = req.params;
   const _id = req.user?._id;
-  if (_id === undefined) {
-    throw new InternalServerError(RESPONSE_MESSAGE.internalServerError);
-  }
+
   try {
     await Card.findByIdAndUpdate(
       cardId,
@@ -122,10 +108,6 @@ export const removeLikeFromCard = async (
 ) => {
   const { cardId } = req.params;
   const _id = req.user?._id;
-
-  if (_id === undefined) {
-    throw new InternalServerError(RESPONSE_MESSAGE.internalServerError);
-  }
 
   try {
     await Card.findByIdAndUpdate(
