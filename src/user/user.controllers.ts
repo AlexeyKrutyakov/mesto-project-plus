@@ -129,14 +129,17 @@ export const signin = async (
       .orFail(() => {
         throw new UnauthorizedError(RESPONSE_MESSAGE.wrongEmailOrPassword);
       });
+
     if (user) {
       const passwordIsCorrect = await bcrypt.compare(password, user.password);
       if (!passwordIsCorrect) {
         throw new UnauthorizedError(RESPONSE_MESSAGE.wrongEmailOrPassword);
       }
+
       const token = jwt.sign({ _id: user._id }, SECRET_KEY, {
         expiresIn: '7d',
       });
+
       res.cookie('jwt', token, {
         maxAge: 3600000 * 24 * 7,
         httpOnly: true,
