@@ -21,13 +21,13 @@ const cardSchema = new mongoose.Schema<Card>(
     },
     owner: {
       type: mongoose.Types.ObjectId,
-      ref: 'User',
+      ref: 'user',
       required: [true, 'Поле обязательно для заполнения'],
     },
     likes: [
       {
         type: mongoose.Types.ObjectId,
-        ref: 'User',
+        ref: 'user',
         default: [],
       },
     ],
@@ -41,4 +41,4 @@ const cardSchema = new mongoose.Schema<Card>(
   },
 );
 
-export default mongoose.model('Card', cardSchema);
+export default mongoose.model('card', cardSchema);

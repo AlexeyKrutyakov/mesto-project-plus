@@ -20,6 +20,7 @@ const RESPONSE_MESSAGE = {
   notValidEmail: 'Not valid email value',
   notValidAvatar: 'Not valid avatar url',
   notValidLinkUrl: 'Not valid link url',
+  pageNotFound: 'Page not found',
 };
 
 export default RESPONSE_MESSAGE;
