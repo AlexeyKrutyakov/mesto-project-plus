@@ -4,7 +4,7 @@ import cardRouter from '../card/card.router';
 import signinRoute from './signin';
 import signupRoute from './signup';
 import authMiddleware from '../middlewares/auth';
-import notFoundRouter from './error.router';
+import notFoundRouter from './not-found';
 
 const rootRouter = Router();
 
