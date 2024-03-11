@@ -4,6 +4,7 @@ import cardRouter from '../card/card.router';
 import signinRoute from './signin';
 import signupRoute from './signup';
 import authMiddleware from '../middlewares/auth';
+import notFoundRouter from './error.router';
 
 const rootRouter = Router();
 
@@ -14,5 +15,7 @@ rootRouter.use(authMiddleware);
 
 rootRouter.use('/users', userRouter);
 rootRouter.use('/cards', cardRouter);
+
+rootRouter.use(notFoundRouter);
 
 export default rootRouter;
