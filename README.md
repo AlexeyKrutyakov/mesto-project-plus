@@ -44,3 +44,6 @@
 API будет доступно по адресу:
 
 `http://localhost:3000`
+
+
+Коллекция postman для работы с API находится в корневом каталоге проекта ( `postman_collection.json` )
