@@ -45,5 +45,7 @@ API будет доступно по адресу:
 
 `http://localhost:3000`
 
+Для корректной работы сервиса необходима установка [MongoDB](https://www.mongodb.com/)
+
 
 Коллекция postman для работы с API находится в корневом каталоге проекта ( `postman_collection.json` )
